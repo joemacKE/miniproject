@@ -2,6 +2,9 @@ from .serializers import OrderSerializer
 from rest_framework import generics, status
 from manage_orders.models import Order
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from decimal import Decimal
+from django.db.models import Q
 
 class ListOrderAPIView(generics.ListAPIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
@@ -24,3 +27,14 @@ class PostOrderAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
+
+    #ensure only clients have the authority to create orders
+    def perform_create(self, serializer):
+        if self.request.user.role != 'client':
+            raise PermissionDenied("Only clients can post an order")
+        
+        pages = serializer.validated_data.get('pages', 0)
+        amount_per_page = serializer.validated_data.get('amount_per_page', 0)
+        total_amount = Decimal(pages) * amount_per_page
+
+        serializer.save(client=self.request.user, total_amount=total_amount)

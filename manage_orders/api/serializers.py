@@ -11,8 +11,7 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = "__all__"
-        read_only_fields = ['client', 'assigned_writer', 'created_at', 'updated_at', 'uploaded_at']
+        read_only_fields = ['assigned_writer', 'created_at', 'updated_at', 'uploaded_at']
     
-
     def get_total_amount(self, obj):
         return Decimal(obj.pages) * obj.amount_per_page
