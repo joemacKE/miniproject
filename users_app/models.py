@@ -41,6 +41,6 @@ class User(AbstractUser):
     objects = UserManager()
 
     def __str__(self):
-        return f"Name: {self.first_name} | Role {self.role}"
+        return f"Name: {self.first_name} | Role - {self.role}"
 
 # Create your models here.

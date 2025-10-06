@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     #installed apps
     'users_app',
-
+    'manage_orders',
     #third party apps
     'rest_framework',
     "rest_framework_simplejwt.token_blacklist",

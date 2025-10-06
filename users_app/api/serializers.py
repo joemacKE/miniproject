@@ -1,46 +1,44 @@
-from .models import User
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
+User = get_user_model()
+
 
 
 
 #registration serializer
 class RegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, required=True)
+    confirm_password = serializers.CharField(write_only=True, required=True)
+
     class Meta:
         model = User
         fields = [
-                    'email',
-                    'username',
-                    'first_name',
-                    'last_name',
-                    'role',
-                    'phone_number',
-                    'password',
-                    'confirm_password'
+            'email',
+            'username',
+            'first_name',
+            'last_name',
+            'role',
+            'phone_number',
+            'password',
+            'confirm_password'
         ]
 
-        def validate(self, data):
-            if data['password'] != data['confirm_password']:
-                raise serializers.ValidationError("Passwords do not match")
-            return data
-        
-        def create(self, validated_data):
-            password = validated_data.pop('password')
-            confirm_password = validated_data.pop('confirm_password')
+    def validate(self, data):
+        if data['password'] != data['confirm_password']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return data
 
-            user = User.objects.create_user(
-                email = validated_data.get['email'],
-                username = validated_data.get['username'],
-                first_name = validated_data.get['first_name'],
-                last_name = validated_data.get['last_name'],
-                role = validated_data.get['role'],
-                phone_number = validated_data.get['phone_number'],
-            )
-            user.save()
-            return user
+    def create(self, validated_data):
+        validated_data.pop('confirm_password')
+        password = validated_data.pop('password')
+
+        # use create_user to hash password properly
+        user = User.objects.create_user(**validated_data)
+        user.set_password(password)
+        user.save()
+        return user
         
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField()
