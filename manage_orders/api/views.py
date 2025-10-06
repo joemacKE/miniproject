@@ -38,3 +38,13 @@ class PostOrderAPIView(generics.CreateAPIView):
         total_amount = pages * amount_per_page
 
         serializer.save(client=self.request.user, total_amount=total_amount)
+
+class UpdateRetrieveOrderView(generics.RetrieveUpdateAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()
+
+class DeleteAPIView(generics.RetrieveDestroyAPIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+    serializer_class = OrderSerializer
+    queryset = Order.objects.all()

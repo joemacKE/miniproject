@@ -16,3 +16,6 @@ class OrderSerializer(serializers.ModelSerializer):
     def get_total_amount(self, obj):
 
         return obj.pages * obj.amount_per_page
+    
+
+   
