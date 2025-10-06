@@ -25,8 +25,8 @@ class ListOrderAPIView(generics.ListAPIView):
 
 class PostOrderAPIView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    queryset = Order.objects.all()
 
     #ensure only clients have the authority to create orders
     def perform_create(self, serializer):
@@ -35,6 +35,6 @@ class PostOrderAPIView(generics.CreateAPIView):
         
         pages = serializer.validated_data.get('pages', 0)
         amount_per_page = serializer.validated_data.get('amount_per_page', 0)
-        total_amount = Decimal(pages) * amount_per_page
+        total_amount = pages * amount_per_page
 
         serializer.save(client=self.request.user, total_amount=total_amount)
