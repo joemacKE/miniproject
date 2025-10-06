@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from manage_orders.models import Order
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
-from decimal import Decimal
+from users_app.api.permissions import IsOrderOwnerOrAdmin, IsClient
 from django.db.models import Q
 
 class ListOrderAPIView(generics.ListAPIView):
@@ -24,7 +24,7 @@ class ListOrderAPIView(generics.ListAPIView):
         return Order.objects.none()
 
 class PostOrderAPIView(generics.CreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsClient]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
@@ -40,11 +40,11 @@ class PostOrderAPIView(generics.CreateAPIView):
         serializer.save(client=self.request.user, total_amount=total_amount)
 
 class UpdateRetrieveOrderView(generics.RetrieveUpdateAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOrderOwnerOrAdmin, IsClient]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
 
 class DeleteAPIView(generics.RetrieveDestroyAPIView):
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAuthenticated, IsOrderOwnerOrAdmin, IsClient]
     serializer_class = OrderSerializer
     queryset = Order.objects.all()
